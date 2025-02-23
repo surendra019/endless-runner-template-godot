@@ -1,0 +1,139 @@
+[gd_scene load_steps=16 format=3 uid="uid://t1pt8knl7pq5"]
+
+[ext_resource type="Texture2D" uid="uid://dfgs06pt7wpsa" path="res://Assets/HDRI/kloofendal_48d_partly_cloudy_puresky_1k.exr" id="1_5sc8s"]
+[ext_resource type="PackedScene" uid="uid://dphevg2cksm" path="res://Scenes/player.tscn" id="1_o8sq4"]
+[ext_resource type="Script" path="res://Scripts/main.gd" id="1_u70sc"]
+[ext_resource type="Texture2D" uid="uid://kkoh0xompotv" path="res://Assets/rock_wall_12_1k/textures/rock_wall_12_disp_1k.png" id="4_m2ps5"]
+[ext_resource type="Texture2D" uid="uid://pbvw3fwmbbxg" path="res://Assets/stone_tiles_02_1k/textures/stone_tiles_02_disp_1k.png" id="5_fsi7q"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_ot4kh"]
+panorama = ExtResource("1_5sc8s")
+
+[sub_resource type="Sky" id="Sky_314h1"]
+sky_material = SubResource("PanoramaSkyMaterial_ot4kh")
+
+[sub_resource type="Environment" id="Environment_v87na"]
+background_mode = 2
+sky = SubResource("Sky_314h1")
+
+[sub_resource type="GDScript" id="GDScript_qe6hf"]
+script/source = "extends StaticBody3D
+
+@onready var end: Marker3D = $End
+@onready var start: Marker3D = $Start
+
+
+func get_length() -> float:
+	return start.global_position.distance_to(end.global_position)
+"
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_hnnxr"]
+albedo_color = Color(0.572988, 0.572988, 0.572988, 1)
+albedo_texture = ExtResource("4_m2ps5")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_261c5"]
+material = SubResource("ORMMaterial3D_hnnxr")
+size = Vector3(3, 1, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_57t08"]
+size = Vector3(3, 1, 20)
+
+[sub_resource type="ORMMaterial3D" id="ORMMaterial3D_jjv0j"]
+albedo_texture = ExtResource("5_fsi7q")
+uv1_triplanar = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_7ye7g"]
+material = SubResource("ORMMaterial3D_jjv0j")
+size = Vector3(1, 3, 20)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_roj40"]
+size = Vector3(1, 3, 20)
+
+[node name="Main" type="Node3D" groups=["main"]]
+script = ExtResource("1_u70sc")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.959432, 0.28194, 0, -0.28194, 0.959432, 0, 4.53967, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_v87na")
+
+[node name="Player" parent="." instance=ExtResource("1_o8sq4")]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, -0.187037, 2.80393, -8.18965)
+
+[node name="Platform" type="StaticBody3D" parent="." groups=["platform"]]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+script = SubResource("GDScript_qe6hf")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9.98518)
+mesh = SubResource("BoxMesh_261c5")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -9.98518)
+shape = SubResource("BoxShape3D_57t08")
+
+[node name="Wall" type="MeshInstance3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.95603, 0, -9.98518)
+mesh = SubResource("BoxMesh_7ye7g")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.95603, 0, -9.98518)
+shape = SubResource("BoxShape3D_roj40")
+
+[node name="Wall2" type="MeshInstance3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.98869, 0, -9.98518)
+mesh = SubResource("BoxMesh_7ye7g")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.98869, 0, -9.98518)
+shape = SubResource("BoxShape3D_roj40")
+
+[node name="End" type="Marker3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -19.9769)
+
+[node name="Start" type="Marker3D" parent="Platform"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.0172408)
+
+[node name="Right" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.08453, 0.59971, 29.0193)
+
+[node name="Center" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.048274, 0.59971, 29.0193)
+
+[node name="Left" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.13089, 0.59971, 29.0193)
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+autostart = true
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="ColorRect" type="ColorRect" parent="UI"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.7)
+
+[node name="RetryBtn" type="Button" parent="UI/ColorRect"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -89.0
+offset_top = -42.0
+offset_right = 89.0
+offset_bottom = 42.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 30
+text = "Retry"
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]
+[connection signal="pressed" from="UI/ColorRect/RetryBtn" to="." method="_on_retry_btn_pressed"]
